@@ -1,0 +1,26 @@
+{
+  "verificado_em_utc": "2026-10-20T18:30:01.217507+00:00",
+  "terraform_version": "1.16.6",
+  "provider": "aiven/aiven",
+  "provider_version": "4.62.0",
+  "init_backend_false": "OK",
+  "fmt_check_exitcode": 0,
+  "validate_exitcode": 0,
+  "validate": {
+    "format_version": "1.0",
+    "valid": true,
+    "error_count": 0,
+    "warning_count": 0,
+    "diagnostics": []
+  },
+  "operacoes_na_conta_aiven": false,
+  "import_executado": false,
+  "plan_autenticado_executado": false,
+  "apply_executado": false,
+  "pendencias": [
+    "Token de API Aiven",
+    "Nome real do projeto e serviço",
+    "Cloud/região e identificador do plano atual",
+    "Importar e revisar plan com autenticação"
+  ]
+}

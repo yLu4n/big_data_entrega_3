@@ -1,0 +1,6 @@
+{
+  "arquivos_texto_inspecionados": 56,
+  "ocorrencias": [],
+  "resultado": "OK",
+  "limite": "Inspeção estática de texto; não audita binários nem histórico remoto."
+}

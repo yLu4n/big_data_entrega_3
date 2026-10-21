@@ -1,0 +1,10 @@
+.terraform/
+terraform.tfvars
+*.auto.tfvars
+*.tfstate
+*.tfstate.*
+*.tfplan
+plan.json
+crash.log
+crash.*.log
+# Versionar .terraform.lock.hcl; ele contém checksums, não credenciais.

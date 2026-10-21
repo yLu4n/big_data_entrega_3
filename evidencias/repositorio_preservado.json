@@ -1,0 +1,12 @@
+{
+  "verificado_em_utc": "2026-10-20T18:31:59.800464+00:00",
+  "commit_inicial": "c0c652edae65de203028d3e24d8f6668da5a9e89",
+  "commit_final": "c0c652edae65de203028d3e24d8f6668da5a9e89",
+  "arquivos_comparados": 41,
+  "arquivos_alterados": [],
+  "status_inicial": "",
+  "status_final": "",
+  "commit_executado": false,
+  "push_executado": false,
+  "resultado": "OK"
+}

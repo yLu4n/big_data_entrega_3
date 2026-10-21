@@ -1,0 +1,48 @@
+variavel,codigo,rotulo
+uf,29,Bahia
+capital,29,Município de Salvador (BA)
+v2007,1,Homem
+v2007,2,Mulher
+v2010,1,Branca
+v2010,2,Preta
+v2010,3,Amarela
+v2010,4,Parda
+v2010,5,Indígena
+v2010,9,Ignorado
+v4018,1,1 a 5 pessoas
+v4018,2,6 a 10 pessoas
+v4018,3,11 a 50 pessoas
+v4018,4,51 ou mais pessoas
+v4019,1,Sim
+v4019,2,Não
+vd3004,1,Sem instrução e menos de 1 ano de estudo
+vd3004,2,Fundamental incompleto ou equivalente
+vd3004,3,Fundamental completo ou equivalente
+vd3004,4,Médio incompleto ou equivalente
+vd3004,5,Médio completo ou equivalente
+vd3004,6,Superior incompleto ou equivalente
+vd3004,7,Superior completo
+vd4002,1,Pessoas ocupadas
+vd4002,2,Pessoas desocupadas
+vd4009,1,Empregado no setor privado com carteira de trabalho assinada
+vd4009,2,Empregado no setor privado sem carteira de trabalho assinada
+vd4009,3,Trabalhador doméstico com carteira de trabalho assinada
+vd4009,4,Trabalhador doméstico sem carteira de trabalho assinada
+vd4009,5,Empregado no setor público com carteira de trabalho assinada
+vd4009,6,Empregado no setor público sem carteira de trabalho assinada
+vd4009,7,Militar e servidor estatutário
+vd4009,8,Empregador
+vd4009,9,Conta-própria
+vd4009,10,Trabalhador familiar auxiliar
+vd4010,1,"Agricultura, pecuária, produção florestal, pesca e aquicultura"
+vd4010,2,Indústria geral
+vd4010,3,Construção
+vd4010,4,"Comércio, reparação de veículos automotores e motocicletas"
+vd4010,5,"Transporte, armazenagem e correio"
+vd4010,6,Alojamento e alimentação
+vd4010,7,"Informação, comunicação e atividades financeiras, imobiliárias, profissionais e administrativas"
+vd4010,8,"Administração pública, defesa e seguridade social"
+vd4010,9,"Educação, saúde humana e serviços sociais"
+vd4010,10,Outros Serviços
+vd4010,11,Serviços domésticos
+vd4010,12,Atividades mal definidas

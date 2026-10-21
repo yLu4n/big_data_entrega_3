@@ -1,0 +1,6 @@
+# Alternativa ao comando terraform import; não use as duas formas juntas.
+# Copie para imports.tf somente depois de preencher os valores reais.
+import {
+  to = aiven_pg.projeto
+  id = "${var.project_name}/${var.service_name}"
+}

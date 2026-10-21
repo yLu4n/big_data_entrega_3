@@ -1,0 +1,49 @@
+erDiagram
+    FONTE ||--o{ OBSERVACAO : arquivo_sha256
+    DIM_UF ||--o{ OBSERVACAO : uf
+    DIM_CAPITAL o|--o{ OBSERVACAO : capital
+    DIM_V2007 ||--o{ OBSERVACAO : sexo
+    DIM_V2010 ||--o{ OBSERVACAO : cor_raca
+    DIM_VD3004 ||--o{ OBSERVACAO : escolaridade
+    DIM_VD4002 ||--o{ OBSERVACAO : ocupacao
+    DIM_VD4009 ||--o{ OBSERVACAO : posicao
+    DIM_VD4010 ||--o{ OBSERVACAO : atividade
+    DIM_V4019 o|--o{ OBSERVACAO : cnpj
+    DIM_V4018 o|--o{ OBSERVACAO : porte
+    FONTE {
+        char64 sha256 PK
+        varchar80 arquivo UK
+        bigint bytes
+        smallint ano
+        smallint trimestre
+    }
+    OBSERVACAO {
+        smallint ano PK
+        smallint trimestre PK
+        varchar9 upa PK
+        varchar2 v1008 PK
+        varchar2 v1014 PK
+        varchar1 v1016 PK
+        varchar2 v2003 PK
+        char64 arquivo_sha256 FK
+        bigint linha_origem
+        smallint uf FK
+        smallint capital FK
+        smallint v2007 FK
+        smallint v2009
+        smallint v2010 FK
+        varchar7 estrato
+        decimal18_8 v1028
+        smallint vd3004 FK
+        smallint vd4002 FK
+        smallint vd4009 FK
+        smallint vd4010 FK
+        smallint v4019 FK
+        smallint v4018 FK
+        decimal12_2 vd4016
+        boolean is_bahia
+        boolean is_salvador
+        boolean is_empreendedor
+        boolean is_empreendedora
+        boolean formalizada
+    }

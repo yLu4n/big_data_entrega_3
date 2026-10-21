@@ -1,0 +1,7 @@
+# Configuracao publica do servico utilizado no projeto.
+# Copie para terraform.tfvars. Para outro ambiente, ajuste os identificadores.
+# O token NÃO deve ser incluído neste arquivo.
+project_name = "bigdatalkb"
+service_name = "pg-3746e955"
+cloud_name   = "do-nyc"
+plan         = "developer-1"

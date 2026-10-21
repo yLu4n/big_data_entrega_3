@@ -1,0 +1,27 @@
+.venv/
+venv/
+__pycache__/
+work/
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+dados/*.tmp
+# Estado, planos e credenciais de infraestrutura nunca entram no Git.
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+*.tfplan
+**/terraform.tfvars
+*.auto.tfvars
+**/plan.json
+crash.log
+crash.*.log
+segredos/
+.pgpass
+pgpass.conf
+*.log
+# Exemplos e o lock do provedor são publicáveis.
+!**/*.tfvars.example
+!**/.terraform.lock.hcl

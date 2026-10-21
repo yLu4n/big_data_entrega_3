@@ -1,0 +1,16 @@
+{
+  "url": "https://github.com/yLu4n/big_data",
+  "branch": "main",
+  "versao": "fase2-bahia-v1",
+  "recorte": "UF=29, toda a Bahia incluindo Salvador",
+  "total": 20706,
+  "salvador": 3382,
+  "versao_entrega": "fase2-bahia-aiven-v1",
+  "armazenamento_nuvem": {
+    "provedor": "Aiven",
+    "banco": "defaultdb",
+    "schema": "ef",
+    "total": 20706,
+    "TLS": "1.3"
+  }
+}

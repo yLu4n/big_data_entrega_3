@@ -1,0 +1,11 @@
+test_allows_lock_and_public_connection (test_verificar_segredos.SecurityScanTests.test_allows_lock_and_public_connection) ... ok
+test_blocks_state_in_publishable_path (test_verificar_segredos.SecurityScanTests.test_blocks_state_in_publishable_path) ... ok
+test_detects_token_without_printing_value (test_verificar_segredos.SecurityScanTests.test_detects_token_without_printing_value) ... ok
+test_ignores_private_runtime_directory (test_verificar_segredos.SecurityScanTests.test_ignores_private_runtime_directory) ... ok
+test_rejects_literal_credential_field (test_verificar_segredos.SecurityScanTests.test_rejects_literal_credential_field) ... ok
+test_rejects_secret_file_even_without_token_pattern (test_verificar_segredos.SecurityScanTests.test_rejects_secret_file_even_without_token_pattern) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.103s
+
+OK
