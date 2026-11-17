@@ -25,3 +25,10 @@ pgpass.conf
 # Exemplos e o lock do provedor são publicáveis.
 !**/*.tfvars.example
 !**/.terraform.lock.hcl
+
+# Entrega 3
+.venv/
+.env
+__pycache__/
+*.pyc
+tmp/

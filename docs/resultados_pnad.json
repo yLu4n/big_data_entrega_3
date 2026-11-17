@@ -1,0 +1,539 @@
+{
+  "fonte": "Dados_tratados\\Entrega_Tecnica_Fase_2_Bahia.zip",
+  "csv_sha256": "56e0ec04ce8030c1a293dae268b32df73cf3d904a97114a50e9ac4943c346a68",
+  "metodo": "Estimativas pontuais ponderadas por V1028; renda nominal VD4016; um trimestre por vez.",
+  "recortes": [
+    {
+      "ano": 2026,
+      "trimestre": 1,
+      "territorio": "bahia",
+      "n_ocupados": 10062,
+      "indicadores": {
+        "women_total": 692208.64035208,
+        "women_share": 33.733117415990755,
+        "black_share": 77.67742368317063,
+        "formal_rate": 19.955478170089116,
+        "women_income": 1817.881455991999,
+        "income_gap": 28.316748948887405,
+        "n": 1152,
+        "income_n": 1152,
+        "formal_n": 1152
+      },
+      "renda_media_homens": 2535.9919218727787,
+      "grupos": {
+        "mulheres_negras": {
+          "renda_media": 1529.3681965389196,
+          "n": 894,
+          "n_renda": 894,
+          "formalizacao_pct": 16.83245535561897,
+          "n_cnpj": 894
+        },
+        "mulheres_brancas": {
+          "renda_media": 2928.022768135377,
+          "n": 243,
+          "n_renda": 243,
+          "formalizacao_pct": 32.24324317980712,
+          "n_cnpj": 243
+        },
+        "homens_negros": {
+          "renda_media": 2202.5312305939156,
+          "n": 1770,
+          "n_renda": 1770,
+          "formalizacao_pct": 18.19260601963165,
+          "n_cnpj": 1770
+        },
+        "homens_brancos": {
+          "renda_media": 3850.0569976293013,
+          "n": 468,
+          "n_renda": 468,
+          "formalizacao_pct": 31.47006870125704,
+          "n_cnpj": 468
+        }
+      },
+      "setores_empreendedoras": [
+        {
+          "setor": "Comércio e reparação",
+          "participacao_pct": 27.16383770006996
+        },
+        {
+          "setor": "Outros serviços",
+          "participacao_pct": 18.165900898948834
+        },
+        {
+          "setor": "Alojamento e alimentação",
+          "participacao_pct": 13.892428849415623
+        },
+        {
+          "setor": "Agropecuária e pesca",
+          "participacao_pct": 12.234221583007944
+        },
+        {
+          "setor": "Indústria",
+          "participacao_pct": 10.68048652739962
+        },
+        {
+          "setor": "Educação, saúde e serviços sociais",
+          "participacao_pct": 8.5129793536841
+        },
+        {
+          "setor": "Informação, finanças e serviços profissionais",
+          "participacao_pct": 7.72374429385138
+        },
+        {
+          "setor": "Transporte e correio",
+          "participacao_pct": 1.349046930473199
+        },
+        {
+          "setor": "Construção",
+          "participacao_pct": 0.2516067011463687
+        },
+        {
+          "setor": "Atividades mal definidas",
+          "participacao_pct": 0.025747162002969132
+        }
+      ]
+    },
+    {
+      "ano": 2026,
+      "trimestre": 1,
+      "territorio": "salvador",
+      "n_ocupados": 1645,
+      "indicadores": {
+        "women_total": 154568.57829641,
+        "women_share": 40.86750856775715,
+        "black_share": 79.39628251075808,
+        "formal_rate": 24.367674081521134,
+        "women_income": 2282.8631170298936,
+        "income_gap": 42.689209149516785,
+        "n": 227,
+        "income_n": 227,
+        "formal_n": 227
+      },
+      "renda_media_homens": 3983.3041616640776,
+      "grupos": {
+        "mulheres_negras": {
+          "renda_media": 1676.9893455000595,
+          "n": 174,
+          "n_renda": 174,
+          "formalizacao_pct": 18.828686240621508,
+          "n_cnpj": 174
+        },
+        "mulheres_brancas": {
+          "renda_media": 4794.6106387310265,
+          "n": 51,
+          "n_renda": 51,
+          "formalizacao_pct": 47.58627810472797,
+          "n_cnpj": 51
+        },
+        "homens_negros": {
+          "renda_media": 2817.274802771915,
+          "n": 224,
+          "n_renda": 224,
+          "formalizacao_pct": 24.64360372645511,
+          "n_cnpj": 224
+        },
+        "homens_brancos": {
+          "renda_media": 8031.516516474215,
+          "n": 77,
+          "n_renda": 77,
+          "formalizacao_pct": 58.340915249589,
+          "n_cnpj": 77
+        }
+      },
+      "setores_empreendedoras": [
+        {
+          "setor": "Outros serviços",
+          "participacao_pct": 20.194292694180117
+        },
+        {
+          "setor": "Alojamento e alimentação",
+          "participacao_pct": 19.38853122145592
+        },
+        {
+          "setor": "Comércio e reparação",
+          "participacao_pct": 19.346481874087686
+        },
+        {
+          "setor": "Educação, saúde e serviços sociais",
+          "participacao_pct": 13.478921210685609
+        },
+        {
+          "setor": "Indústria",
+          "participacao_pct": 12.020768572833244
+        },
+        {
+          "setor": "Informação, finanças e serviços profissionais",
+          "participacao_pct": 11.071428738584357
+        },
+        {
+          "setor": "Transporte e correio",
+          "participacao_pct": 3.7331933688905656
+        },
+        {
+          "setor": "Agropecuária e pesca",
+          "participacao_pct": 0.5287132534225948
+        },
+        {
+          "setor": "Construção",
+          "participacao_pct": 0.23766906585989625
+        }
+      ]
+    },
+    {
+      "ano": 2026,
+      "trimestre": 1,
+      "territorio": "interior",
+      "n_ocupados": 8417,
+      "indicadores": {
+        "women_total": 537640.06205567,
+        "women_share": 32.12099741449449,
+        "black_share": 77.18326116809206,
+        "formal_rate": 18.6869959692135,
+        "women_income": 1684.2017707287218,
+        "income_gap": 25.18287565248508,
+        "n": 925,
+        "income_n": 925,
+        "formal_n": 925
+      },
+      "renda_media_homens": 2251.0912914880873,
+      "grupos": {
+        "mulheres_negras": {
+          "renda_media": 1485.711063237091,
+          "n": 720,
+          "n_renda": 720,
+          "formalizacao_pct": 16.242094702954464,
+          "n_cnpj": 720
+        },
+        "mulheres_brancas": {
+          "renda_media": 2438.6501350209596,
+          "n": 192,
+          "n_renda": 192,
+          "formalizacao_pct": 28.220683342439845,
+          "n_cnpj": 192
+        },
+        "homens_negros": {
+          "renda_media": 2083.9499320950686,
+          "n": 1546,
+          "n_renda": 1546,
+          "formalizacao_pct": 16.948237279055846,
+          "n_cnpj": 1546
+        },
+        "homens_brancos": {
+          "renda_media": 2894.3571128143294,
+          "n": 391,
+          "n_renda": 391,
+          "formalizacao_pct": 25.32856121197357,
+          "n_cnpj": 391
+        }
+      },
+      "setores_empreendedoras": [
+        {
+          "setor": "Comércio e reparação",
+          "participacao_pct": 29.411284758682427
+        },
+        {
+          "setor": "Outros serviços",
+          "participacao_pct": 17.58274934804276
+        },
+        {
+          "setor": "Agropecuária e pesca",
+          "participacao_pct": 15.599491227950155
+        },
+        {
+          "setor": "Alojamento e alimentação",
+          "participacao_pct": 12.312329467368771
+        },
+        {
+          "setor": "Indústria",
+          "participacao_pct": 10.295162767323445
+        },
+        {
+          "setor": "Educação, saúde e serviços sociais",
+          "participacao_pct": 7.085298221060695
+        },
+        {
+          "setor": "Informação, finanças e serviços profissionais",
+          "participacao_pct": 6.761303319440135
+        },
+        {
+          "setor": "Transporte e correio",
+          "participacao_pct": 0.6636178647380196
+        },
+        {
+          "setor": "Construção",
+          "participacao_pct": 0.25561369508727194
+        },
+        {
+          "setor": "Atividades mal definidas",
+          "participacao_pct": 0.03314933030633156
+        }
+      ]
+    },
+    {
+      "ano": 2026,
+      "trimestre": 2,
+      "territorio": "bahia",
+      "n_ocupados": 10644,
+      "indicadores": {
+        "women_total": 699114.0967842,
+        "women_share": 33.26184763623773,
+        "black_share": 76.74551745115458,
+        "formal_rate": 22.491776303406063,
+        "women_income": 2019.646031792398,
+        "income_gap": 22.82576501451462,
+        "n": 1219,
+        "income_n": 1219,
+        "formal_n": 1219
+      },
+      "renda_media_homens": 2616.9952085333207,
+      "grupos": {
+        "mulheres_negras": {
+          "renda_media": 1620.2439128077926,
+          "n": 925,
+          "n_renda": 925,
+          "formalizacao_pct": 17.880542716104564,
+          "n_cnpj": 925
+        },
+        "mulheres_brancas": {
+          "renda_media": 3440.595819909224,
+          "n": 280,
+          "n_renda": 280,
+          "formalizacao_pct": 39.11211147739802,
+          "n_cnpj": 280
+        },
+        "homens_negros": {
+          "renda_media": 2267.2895844244094,
+          "n": 1895,
+          "n_renda": 1895,
+          "formalizacao_pct": 16.843442369557046,
+          "n_cnpj": 1895
+        },
+        "homens_brancos": {
+          "renda_media": 4105.925284702344,
+          "n": 493,
+          "n_renda": 493,
+          "formalizacao_pct": 27.467273581269144,
+          "n_cnpj": 493
+        }
+      },
+      "setores_empreendedoras": [
+        {
+          "setor": "Comércio e reparação",
+          "participacao_pct": 27.574743595866344
+        },
+        {
+          "setor": "Outros serviços",
+          "participacao_pct": 19.096054285643916
+        },
+        {
+          "setor": "Alojamento e alimentação",
+          "participacao_pct": 14.336868456221238
+        },
+        {
+          "setor": "Indústria",
+          "participacao_pct": 10.132420477658565
+        },
+        {
+          "setor": "Agropecuária e pesca",
+          "participacao_pct": 9.720290637942378
+        },
+        {
+          "setor": "Informação, finanças e serviços profissionais",
+          "participacao_pct": 9.392413844847535
+        },
+        {
+          "setor": "Educação, saúde e serviços sociais",
+          "participacao_pct": 7.942981566581248
+        },
+        {
+          "setor": "Transporte e correio",
+          "participacao_pct": 0.9470071199699525
+        },
+        {
+          "setor": "Construção",
+          "participacao_pct": 0.7935821095454967
+        },
+        {
+          "setor": "Atividades mal definidas",
+          "participacao_pct": 0.06363790572332438
+        }
+      ]
+    },
+    {
+      "ano": 2026,
+      "trimestre": 2,
+      "territorio": "salvador",
+      "n_ocupados": 1737,
+      "indicadores": {
+        "women_total": 148873.06693872,
+        "women_share": 40.1513237553053,
+        "black_share": 78.15568114215971,
+        "formal_rate": 30.104739813359377,
+        "women_income": 2515.4994207277323,
+        "income_gap": 38.52118348714699,
+        "n": 233,
+        "income_n": 233,
+        "formal_n": 233
+      },
+      "renda_media_homens": 4091.6523176756855,
+      "grupos": {
+        "mulheres_negras": {
+          "renda_media": 1667.0202685349334,
+          "n": 171,
+          "n_renda": 171,
+          "formalizacao_pct": 21.310032445867638,
+          "n_cnpj": 171
+        },
+        "mulheres_brancas": {
+          "renda_media": 5675.730985078318,
+          "n": 59,
+          "n_renda": 59,
+          "formalizacao_pct": 63.262565071787506,
+          "n_cnpj": 59
+        },
+        "homens_negros": {
+          "renda_media": 2987.442097728119,
+          "n": 244,
+          "n_renda": 244,
+          "formalizacao_pct": 22.081300775318834,
+          "n_cnpj": 244
+        },
+        "homens_brancos": {
+          "renda_media": 9028.432933442453,
+          "n": 72,
+          "n_renda": 72,
+          "formalizacao_pct": 52.593223761580774,
+          "n_cnpj": 72
+        }
+      },
+      "setores_empreendedoras": [
+        {
+          "setor": "Comércio e reparação",
+          "participacao_pct": 30.695654792219937
+        },
+        {
+          "setor": "Outros serviços",
+          "participacao_pct": 18.302910802258154
+        },
+        {
+          "setor": "Alojamento e alimentação",
+          "participacao_pct": 14.163758594393403
+        },
+        {
+          "setor": "Educação, saúde e serviços sociais",
+          "participacao_pct": 13.37294209229594
+        },
+        {
+          "setor": "Informação, finanças e serviços profissionais",
+          "participacao_pct": 12.57798278453401
+        },
+        {
+          "setor": "Indústria",
+          "participacao_pct": 8.949425812839745
+        },
+        {
+          "setor": "Transporte e correio",
+          "participacao_pct": 1.0055110990869671
+        },
+        {
+          "setor": "Agropecuária e pesca",
+          "participacao_pct": 0.35423736858130067
+        },
+        {
+          "setor": "Atividades mal definidas",
+          "participacao_pct": 0.2988462446287433
+        },
+        {
+          "setor": "Construção",
+          "participacao_pct": 0.27873040916179015
+        }
+      ]
+    },
+    {
+      "ano": 2026,
+      "trimestre": 2,
+      "territorio": "interior",
+      "n_ocupados": 8907,
+      "indicadores": {
+        "women_total": 550241.0298454801,
+        "women_share": 31.786182335427217,
+        "black_share": 76.36398393733333,
+        "formal_rate": 20.432014917495614,
+        "women_income": 1885.4880705376886,
+        "income_gap": 19.419134733345988,
+        "n": 986,
+        "income_n": 986,
+        "formal_n": 986
+      },
+      "renda_media_homens": 2339.870717816605,
+      "grupos": {
+        "mulheres_negras": {
+          "renda_media": 1607.2911765538636,
+          "n": 754,
+          "n_renda": 754,
+          "formalizacao_pct": 16.930890370070998,
+          "n_cnpj": 754
+        },
+        "mulheres_brancas": {
+          "renda_media": 2873.2214169204235,
+          "n": 221,
+          "n_renda": 221,
+          "formalizacao_pct": 32.9816772184082,
+          "n_cnpj": 221
+        },
+        "homens_negros": {
+          "renda_media": 2128.7927923565494,
+          "n": 1651,
+          "n_renda": 1651,
+          "formalizacao_pct": 15.836118819194384,
+          "n_cnpj": 1651
+        },
+        "homens_brancos": {
+          "renda_media": 3229.843300784912,
+          "n": 421,
+          "n_renda": 421,
+          "formalizacao_pct": 22.995489309402764,
+          "n_cnpj": 421
+        }
+      },
+      "setores_empreendedoras": [
+        {
+          "setor": "Comércio e reparação",
+          "participacao_pct": 26.730350691224118
+        },
+        {
+          "setor": "Outros serviços",
+          "participacao_pct": 19.31064697591868
+        },
+        {
+          "setor": "Alojamento e alimentação",
+          "participacao_pct": 14.383705014474419
+        },
+        {
+          "setor": "Agropecuária e pesca",
+          "participacao_pct": 12.254367523689654
+        },
+        {
+          "setor": "Indústria",
+          "participacao_pct": 10.452491200071206
+        },
+        {
+          "setor": "Informação, finanças e serviços profissionais",
+          "participacao_pct": 8.530527158336657
+        },
+        {
+          "setor": "Educação, saúde e serviços sociais",
+          "participacao_pct": 6.473852888470238
+        },
+        {
+          "setor": "Construção",
+          "participacao_pct": 0.9328802489013744
+        },
+        {
+          "setor": "Transporte e correio",
+          "participacao_pct": 0.9311782989136335
+        }
+      ]
+    }
+  ]
+}

@@ -1,236 +1,206 @@
-# Empreendedorismo Feminino - Bahia e Salvador
+# Entre Elas · Bahia
 
-Documentação do Marco 2, revisada em 20/10/2026. Esta versão foi preparada em uma cópia separada, sem alterar o repositório Git. As evidências de carga no Aiven são de 14/10/2026; a importação da infraestrutura pelo Terraform ainda não foi executada.
+Dashboard Plotly Dash com API REST própria para os dados da PNAD Contínua. Fluxo: **base tratada → API HTTP → dashboard**, mantendo os seis indicadores, filtros, gráficos interseccionais e exportação CSV.
 
-## Dados utilizados
+## Acesso ao dashboard: execução local em um comando
 
-### Fonte dos dados
+Com as dependências instaladas, execute no PowerShell do VS Code, nesta pasta:
 
-A fonte é a Pesquisa Nacional por Amostra de Domicílios Contínua trimestral (PNADC), do IBGE, conforme a documentação fornecida. Foram utilizados os arquivos locais originais e os metadados da pasta `Projeto_Empreendedorismo_Feminino`, sem modificar os originais.
-
-### Identificação da base
-
-- Microdados originais: `PNADC_012026.txt` e `PNADC_022026.txt`.
-- Layout posicional: `input_PNADC_trimestral.txt`.
-- Dicionários: `dicionario_PNADC_microdados_trimestral.xls` e `Variaveis_PNADC_Trimestral.xls`.
-- Base tratada: `dados/pnadc_ocupados_2026.parquet` e `dados/pnadc_ocupados_2026.csv`.
-- Versão dos dados: `fase2-bahia-v1`.
-- Proveniência e hashes: `dados/auditoria.json` e `dados/fontes.csv`.
-
-### Período e recorte utilizado
-
-São mantidas pessoas ocupadas (`VD4002=1`) do 1º e do 2º trimestres de 2026, exclusivamente da Bahia (`UF=29`). Salvador é identificado por `UF=29 AND Capital=29` e está incluído no total estadual. Ambos os sexos e todas as posições na ocupação permanecem para comparação.
-
-| Período | Bahia, incluindo Salvador | Salvador, subconjunto |
-|---|---:|---:|
-| 1º trimestre de 2026 | 10.062 | 1.645 |
-| 2º trimestre de 2026 | 10.644 | 1.737 |
-| Total de observações | 20.706 | 3.382 |
-
-### Características relevantes da base
-
-Os TXT são de largura fixa, com 3.478 caracteres por linha, sem a quebra de linha. Cada registro tratado representa uma observação de pessoa por trimestre e contém 21 campos de origem, 5 indicadores e 2 campos de rastreabilidade.
-
-Pessoas podem reaparecer em trimestres diferentes; as 20.706 observações não representam necessariamente pessoas distintas. Salvador já integra a Bahia, portanto os dois recortes não devem ser somados. Rendas são habituais do trabalho principal e nominais. O peso calibrado, a UPA e o estrato são preservados. Estudos complementares não foram unidos aos microdados como resultados trimestrais.
-
-## Tratamento realizado
-
-### Principais problemas ou características identificados
-
-A origem não possui separadores: sua leitura depende das posições definidas no layout. Os campos apresentam códigos categóricos, identificadores com zeros iniciais, valores opcionais em branco e pesos com oito casas decimais. Também foi necessário reduzir o volume nacional para o recorte da Bahia e verificar a unicidade das observações.
-
-Foram lidas 1.032.879 linhas originais. O filtro de ocupação excluiu 568.422 registros fora do universo de ocupados. Entre os 464.457 ocupados, o filtro geográfico excluiu 443.751 de outras UFs, resultando em 20.706 observações da Bahia. Exclusões por universo e geografia não são erros de dados. Não foram encontrados registros inválidos, duplicatas ou conflitos na execução registrada.
-
-### Decisões, transformações e justificativas
-
-| Decisão | Transformação realizada | Justificativa |
-|---|---|---|
-| Leitura pelo layout | Extração dos 21 campos em suas posições e conferência com os dicionários | Interpretar corretamente o TXT posicional |
-| Universo de análise | Manter `VD4002=1` e `UF=29` | Analisar ocupados da Bahia, incluindo Salvador |
-| Controle de memória | Leitura em fluxo, deduplicação em SQLite e exportação em blocos de 25.000 | Evitar carregar os 3,59 GB de TXT em memória |
-| Identificadores textuais | Preservar UPA, estrato, domicílio, painel, entrevista e ordem como texto | Conservar zeros à esquerda |
-| Precisão numérica | Converter peso e renda com `Decimal` e armazenar em `NUMERIC` | Evitar arredondamento intermediário por ponto flutuante |
-| Valores ausentes | Converter brancos opcionais para `NULL`; manter zeros informados | Distinguir ausência de renda de renda zero |
-| Códigos válidos | Conferir domínios e preservar códigos de ignorado previstos | Manter a interpretação do IBGE |
-| Duplicatas | Remover repetições idênticas; separar todas as ocorrências de chaves com conteúdo divergente | Evitar contagem repetida e perda silenciosa de informação |
-| Rastreabilidade | Guardar SHA-256 da fonte e linha original | Identificar a versão utilizada e localizar a origem de cada observação |
-| Arquivos de saída | Gerar Parquet tipado/compactado e CSV para inspeção e carga | Facilitar reprodução e armazenamento no PostgreSQL |
-
-Não houve imputação, subamostragem, agregação anterior à carga ou exclusão de rendas altas válidas. SQLite é apenas uma área temporária; o banco de disponibilização é PostgreSQL.
-
-Os indicadores identificam Bahia, Salvador, empreendedores (`VD4009 IN (8,9)`), empreendedoras (essa condição e `V2007=2`) e registro do negócio no CNPJ. A formalização é aplicada somente a empreendedores; fora desse universo ou sem resposta, fica `NULL`.
-
-Os procedimentos estão em `scripts/etl.py`. Erros e conflitos são registrados em `dados/rejeitados.csv`; a versão tratada e as contagens constam de `dados/auditoria.json`. A comparação integral com o recorte da versão nacional anterior está em `evidencias/comparacao_recorte.json`. Justificativas adicionais estão em `docs/DECISOES_TECNICAS.md`.
-
-## Modelagem
-
-### Estrutura do banco
-
-O banco na nuvem é `defaultdb`, no Aiven, e as tabelas do projeto estão no esquema `ef`.
-
-| Entidade | Finalidade |
-|---|---|
-| `ef.observacao` | 20.706 observações no grão pessoa-trimestre, com os campos analíticos e de origem |
-| `ef.fonte` | Identificação das 2 fontes originais, incluindo arquivo, hash, tamanho e período |
-| `ef.dim_uf` e `ef.dim_capital` | Referências geográficas; nesta versão, somente o código 29 |
-| `ef.dim_v2007` e `ef.dim_v2010` | Sexo e cor/raça |
-| `ef.dim_vd3004` e `ef.dim_vd4002` | Escolaridade e condição de ocupação |
-| `ef.dim_vd4009` e `ef.dim_vd4010` | Posição na ocupação e grupamento de atividade |
-| `ef.dim_v4019` e `ef.dim_v4018` | Registro no CNPJ e faixa de pessoas no negócio |
-
-São dez dimensões e 47 códigos de referência. Cada dimensão contém `codigo SMALLINT PRIMARY KEY` e `rotulo TEXT NOT NULL`. O inventário completo de tabelas, campos, tipos, restrições e quantidades está em `evidencias/estrutura_nuvem.json`.
-
-### Estratégia de organização dos dados
-
-Foi adotado um modelo relacional que preserva o detalhe pessoa-trimestre e separa os rótulos em tabelas de referência. Isso reduz repetição textual, facilita consultas e permite validar os códigos por chaves estrangeiras.
-
-A chave primária de `observacao` é `(ano,trimestre,upa,v1008,v1014,v1016,v2003)`. Há também unicidade por `(arquivo_sha256,linha_origem)`. A fonte é referenciada pelo hash e as dimensões por seus códigos. Restrições validam ocupação, idade, peso, geografia e indicadores; `CHECK (uf=29)` impede armazenar outras UFs. Índices apoiam consultas por período, geografia, sexo e empreendedoras.
-
-Os identificadores usam `VARCHAR`, os códigos usam `SMALLINT`, o peso usa `NUMERIC(18,8)`, a renda usa `NUMERIC(12,2)`, os indicadores usam `BOOLEAN`, o hash usa `CHAR(64)` e a linha original usa `BIGINT`. O dicionário detalhado está em `dados/dicionario_tratado.json`.
-
-As views `ef.v_recortes`, `ef.v_resumo_geografico` e `ef.v_perfil_empreendedores` oferecem os recortes Bahia e Salvador. Totais estimados usam a soma dos pesos; médias de renda usam soma de peso vezes renda dividida pela soma dos pesos apenas das observações com renda informada. Não há resumo Brasil calculado a partir do recorte estadual. Erros padrão e intervalos de confiança exigem tratamento adicional do desenho amostral.
-
-### Representação da modelagem utilizada
-
-```mermaid
-erDiagram
-  FONTE ||--o{ OBSERVACAO : origem
-  DIM_UF ||--o{ OBSERVACAO : uf
-  DIM_CAPITAL o|--o{ OBSERVACAO : capital
-  DIM_V2007 ||--o{ OBSERVACAO : sexo
-  DIM_V2010 ||--o{ OBSERVACAO : cor_raca
-  DIM_VD3004 ||--o{ OBSERVACAO : escolaridade
-  DIM_VD4002 ||--o{ OBSERVACAO : ocupado
-  DIM_VD4009 ||--o{ OBSERVACAO : posicao
-  DIM_VD4010 ||--o{ OBSERVACAO : atividade
-  DIM_V4019 o|--o{ OBSERVACAO : cnpj
-  DIM_V4018 o|--o{ OBSERVACAO : porte
+```powershell
+.\.venv\Scripts\python.exe run.py
 ```
 
-O diagrama com os 28 campos está em `docs/modelagem.mmd`. As cardinalidades opcionais refletem os campos que aceitam `NULL`. O SQL executável está em `sql/01_estrutura.sql`, `sql/02_views.sql` e `sql/04_recorte_bahia.sql`.
+Abra **http://127.0.0.1:8050**. A API fica em **http://127.0.0.1:8000**. Ctrl+C encerra os dois serviços. Se necessário, crie o ambiente com `python -m venv .venv` antes de instalar as dependências.
 
-## Infraestrutura
-
-### Serviços utilizados
-
-O armazenamento é realizado no PostgreSQL gerenciado do Aiven. A carga e a conexão TLS 1.3 foram verificadas em 14/10/2026. A cópia local `big_data` é utilizada para desenvolvimento e validação.
-
-| Parâmetro Aiven | Valor |
-|---|---|
-| Host | `pg-3746e955-bigdatalkb.f.aivencloud.com` |
-| Porta | `22835` |
-| Banco | `defaultdb` |
-| Usuário | `avnadmin` |
-| Esquema do projeto | `ef` |
-| SSL | `require` |
-
-Os parâmetros públicos estão em `config/postgres.aiven.json`; a configuração local está em `config/postgres.local.json`. Nenhuma senha é armazenada nesses arquivos.
-
-### Recursos provisionados e infraestrutura como código
-
-O serviço Aiven já existente contém 12 tabelas do projeto: fonte, observação e dez dimensões, além de índices, restrições e três views. Os recursos internos do produto, como nós, armazenamento e mecanismos de backup, são gerenciados pelo Aiven. Não foram declaradas VMs, redes ou buckets próprios que não existem no projeto.
-
-Os arquivos em `infra/aiven/` representam o serviço existente pelo recurso `aiven_pg.projeto`. Projeto, nome do serviço, cloud/região e plano são entradas obrigatórias que devem ser confirmadas no painel. Não foram inferidos pelo hostname.
-
-**Situação do Terraform:** os arquivos passaram em `fmt` e `validate`, mas a importação do serviço, o plano autenticado e qualquer `apply` ainda não foram executados. Portanto, esta revisão não declara a infraestrutura como provisionada ou adotada pelo Terraform. O token de API e os quatro parâmetros reais continuam pendentes, conforme registrado em `evidencias/terraform_validacao.json`.
-
-### Tecnologias empregadas e segurança
-
-São utilizados Python, SQLite temporário, Parquet, CSV, PostgreSQL, Aiven e Terraform com o provedor `aiven/aiven` 4.62.0. O lock fixa os checksums do provedor; `prevent_destroy` protege o recurso contra destruições/substituições planejadas enquanto estiver na configuração.
-
-A senha PostgreSQL chega por prompt e ambiente de processo. O token Terraform é separado da senha do banco e usa uma variável `sensitive` e `ephemeral`. Outputs não expõem senha ou URI autenticada. Mesmo assim, o estado pode conter credenciais retornadas pelo provedor; state, planos, chaves, logs de depuração e ambientes virtuais ficam fora do Git e do pacote.
-
-O modo `require` comprova criptografia, mas não valida o hostname com um CA fornecido pela equipe. O carregador também permite `verify-full` com `sslrootcert` quando o CA estiver disponível. A estratégia completa está em `docs/SEGURANCA.md` e as instruções Terraform em `infra/aiven/README.md`.
-
-## Execução
-
-### Ferramentas e dependências necessárias
-
-- Python 3.12 e `pip`.
-- Bibliotecas de `requirements.txt`: `xlrd==2.0.2`, `pyarrow==26.0.0` e `psycopg[binary]==3.3.6`.
-- PowerShell para os iniciadores de conexão e importação.
-- Terraform >=1.10 e <2.0; os arquivos foram validados com Terraform 1.16.6 e provedor Aiven 4.62.0.
-- Cliente PostgreSQL, como pgAdmin ou `psql`, para consultas; `pg_restore` compatível com PostgreSQL 18 para restaurar os backups incluídos.
-
-### Informações necessárias para reprodução
-
-Para reproduzir desde a origem, é necessária a pasta que contém `dados_brutos` e `documentação`, com os TXT, layout e dicionários. Para reproduzir a partir da base tratada, o Parquet e os metadados estão incluídos; o carregador reconstrói o CSV automaticamente quando necessário.
-
-Para consultar ou carregar o Aiven, é necessária a senha PostgreSQL, informada por prompt ou `PGPASSWORD`. Para importar o serviço em Terraform, são necessários um token de API autorizado e os nomes reais de projeto/serviço, cloud/região e plano. Esses segredos não devem ser enviados ao Git ou inseridos nos exemplos.
-
-A estrutura dos arquivos é:
-
-```text
-scripts/       # Tratamento, carga, exportação e verificadores
-sql/           # Tabelas, chaves, restrições, índices e views
-infra/aiven/   # Terraform, lock, exemplos e importação
-config/        # Parâmetros de conexão sem senha
-dados/         # Base tratada, catálogos, auditoria e backups
-docs/          # Modelagem, segurança, decisões e relatórios
-evidencias/    # Registros históricos e verificações desta revisão
-tests/         # Testes do verificador de segredos
-```
-
-### Sequência geral de execução da solução
-
-**1. Preparar o ambiente**, a partir da pasta da entrega:
+**Preparação inicial, somente na primeira instalação:**
 
 ```powershell
 python -m venv .venv
-& ./.venv/Scripts/python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
 ```
 
-**2. Gerar e validar a base tratada**, caso queira reproduzir desde os originais:
+O endereço acima é local e funciona enquanto `run.py` estiver ativo. Esta entrega usa a alternativa de execução local prevista no requisito; não há um link de hospedagem pública.
+
+Se uma versão antiga estiver executando, encerre-a com Ctrl+C no terminal antes de iniciar `run.py`. O iniciador verifica se as portas estão ocupadas para evitar que você continue acessando uma instância antiga.
+
+O projeto não exige banco, senha nem certificado de nuvem. As configurações ficam no `.env`; `.env.example` é o modelo. O dashboard consulta exclusivamente a API, sem leitura direta de arquivo nem troca automática de fonte em caso de erro.
+
+O [guia de implantação e infraestrutura](docs/implantacao.md) detalha os pré-requisitos, a preparação automatizada, portas, configuração, atualização, diagnóstico e pipeline de validação. A preparação inicial também pode ser executada com `python scripts/preparar_ambiente.py`. A entrega usa infraestrutura local e não requer Terraform ou hospedagem adicional. Código, scripts e documentação acompanham esta entrega no repositório [yLu4n/big_data_entrega_3](https://github.com/yLu4n/big_data_entrega_3).
+
+## Organização da entrega 3
+
+A raiz contém a versão atual com API própria e dashboard. A base necessária à execução acompanha o projeto em `Dados_tratados/Entrega_Tecnica_Fase_2_Bahia.zip`. Nenhuma senha ou configuração `.env` local é necessária no clone: os padrões permitem iniciar a aplicação após preparar o ambiente.
+
+Os materiais anteriores foram preservados em [historico/marco2](historico/marco2/README.md). Eles documentam outra etapa e não fazem parte da infraestrutura nem das instruções de execução atuais. As [decisões técnicas da entrega 3](docs/DECISOES_TECNICAS.md) descrevem a arquitetura implementada e distinguem melhorias futuras.
+
+Para executar separadamente, use dois terminais:
 
 ```powershell
-& ./.venv/Scripts/python.exe scripts/etl.py --projeto "C:/Users/saeb/Downloads/Projeto_Empreendedorismo_Feminino" --saida dados --temporarios work
-& ./.venv/Scripts/python.exe scripts/verificar_artefatos.py
+# Terminal 1
+.\.venv\Scripts\python.exe api.py
+# Terminal 2
+.\.venv\Scripts\python.exe app.py
 ```
 
-Substitua apenas o caminho após `--projeto` pela pasta correta. O filtro `UF=29` já é aplicado automaticamente. O ETL substitui os arquivos tratados da pasta de saída; backups e relatórios não são regenerados por esse comando. Se utilizar o Parquet incluído, não é necessário reler os originais.
+Nesse modo, `API_BASE_URL` define a API consultada. No modo conjunto, `run.py` usa a API local na porta `API_PORT`. Ambos os serviços escutam somente em `127.0.0.1`, para execução local.
 
-**3. Validar os arquivos Terraform**, sem operações na conta:
+## Diagrama da interface visual
+
+O diagrama representa as seções reais da interface, de cima para baixo. É um esquema da tela, não uma captura; a quantidade de colunas se adapta à largura do dispositivo.
+
+```mermaid
+flowchart TB
+    header["Entre Elas · Observatório Bahia | PNAD Contínua / IBGE"]
+    hero["Empreender na Bahia. Enxergar as desigualdades. | ODS 5 e ODS 18"]
+    connection["Status da API · Horário da consulta · Botão Atualizar dados"]
+    filters["FILTROS: trimestre · território · raça/cor · escolaridade · atividade · idade"]
+    sample["Trimestre selecionado · Observações de ocupados · Amostra de empreendedoras"]
+    subgraph cards["Indicadores analíticos"]
+        c1["Empreendedoras estimadas"]
+        c2["Participação feminina"]
+        c3["Mulheres negras"]
+        c4["Formalização feminina"]
+        c5["Renda média feminina"]
+        c6["Diferença de renda por sexo"]
+    end
+    subgraph row1["Gráficos · primeira linha"]
+        g1["Renda de empreendedores por sexo e raça/cor"]
+        g2["Acesso ao CNPJ por sexo e raça/cor"]
+    end
+    subgraph row2["Gráficos · segunda linha"]
+        g3["Onde as mulheres empreendem · top 7"]
+        g4["Participação feminina por trimestre"]
+    end
+    table["Tabela sexo × raça/cor · Amostra · Estimativas · Renda · CNPJ · Download CSV"]
+    context["Contexto dos ODS 5 e 18 · Metodologia e limitações"]
+    header --> hero --> connection --> filters --> sample --> cards --> row1 --> row2 --> table --> context
+```
+
+Os filtros atualizam os cartões, os cruzamentos e a exportação. O gráfico de evolução mantém os demais filtros e mostra todos os trimestres disponíveis separadamente. O gráfico de renda e a tabela consideram apenas empregadores e trabalhadores por conta própria.
+
+## Atualização dos dados
+
+A API **relê a fonte em cada requisição**. O dashboard busca novamente os dados ao mudar filtros, clicar em “Atualizar dados” e a cada `REFRESH_SECONDS` (padrão 60; mínimo 15 segundos). A resposta usa `Cache-Control: no-store`.
+
+Por padrão, a fonte é o CSV dentro de `Dados_tratados/Entrega_Tecnica_Fase_2_Bahia.zip`. Para usar uma base atualizável, configure um CSV com o mesmo layout:
+
+```dotenv
+API_BASE_URL=http://127.0.0.1:8000
+API_PORT=8000
+API_TIMEOUT_SECONDS=15
+DATA_FILE=Dados_tratados/base_atualizada.csv
+REFRESH_SECONDS=60
+PORT=8050
+```
+
+`DATA_FILE` vazio usa o ZIP. Caminhos relativos partem da pasta do projeto. Caminhos absolutos no Windows podem usar barras `/` e aspas. Reinicie os serviços após alterar o `.env`. Alterações no conteúdo da fonte já configurada aparecem na próxima consulta, sem reiniciar. Para atualizar o CSV durante o uso, grave um arquivo temporário e substitua o destino de forma atômica, evitando ler gravações incompletas.
+
+**Tempo real significa consultar a versão atual da base. A API não coleta novas divulgações do IBGE automaticamente.** Novos dados precisam ser tratados e incorporados ao arquivo de origem. O campo `meta.consultado_em` indica a hora UTC da leitura, não a data da divulgação. `meta.versao` é o SHA-256 do CSV e muda quando seus bytes mudam.
+
+## Contrato da API
+
+O contrato autoritativo fica em `api/openapi.json`, também disponível por `GET /openapi.json`.
+
+| Método / rota | Resultado |
+| --- | --- |
+| `GET /health` | HTTP 200 se o processo está ativo; não verifica a base |
+| `GET /api/v1/observacoes` | HTTP 200 com `{data: [...], meta: {...}}` |
+| `GET /openapi.json` | Documento OpenAPI 3.1 |
+
+A rota de dados entrega o snapshot completo dos ocupados da Bahia, sem paginação, contendo somente 14 variáveis analíticas: `ano`, `trimestre`, `uf`, `capital`, `v1028`, `v2007`, `v2009`, `v2010`, `vd3004`, `vd4002`, `vd4009`, `v4019`, `vd4010` e `vd4016`. Identificadores domiciliares e de linha não são enviados. Ausências opcionais são `null`; a lista pode estar vazia. O volume inicial é de 20.706 observações. Os filtros pertencem ao servidor Python do dashboard e usam o mesmo snapshot para todos os gráficos de uma atualização.
+
+Erros seguem `{error: {code, message}}`. Fonte ausente ou inválida retorna **503 SOURCE_UNAVAILABLE**; rota inexistente retorna **404 NOT_FOUND**; escrita retorna **405 METHOD_NOT_ALLOWED**. Não há operação de escrita nem autenticação no serviço local.
+
+O cliente tem limite de conexão de 3 segundos e de espera por leitura de `API_TIMEOUT_SECONDS` (padrão 15), valida o status HTTP e o conteúdo. Esses limites são por operação de rede, não um prazo global. Se a API falhar, o painel retira os indicadores e mostra uma mensagem. A atualização seguinte recupera o painel quando a API volta a responder.
+
+## Indicadores
+
+O painel exibe **seis indicadores**, superando o mínimo de quatro. Todos seguem os filtros selecionados e usam um único trimestre. Nas fórmulas, `w = V1028`, `E = VD4009 ∈ {8,9}` (empregador ou conta própria), `M = E e V2007=2` e `H = E e V2007=1`.
+
+| Indicador exibido | Fórmula, unidade e universo | Leitura e relação com os ODS |
+| --- | --- | --- |
+| **1. Empreendedoras estimadas** | `Σ w`, entre M. Unidade: pessoas estimadas no trimestre, não número de entrevistadas. | Dimensiona a população feminina que empreende no território. Ajuda a contextualizar a autonomia econômica no ODS 5; um aumento isolado não demonstra melhoria das condições de trabalho. |
+| **2. Participação feminina** | `100 × Σw(M) / Σw(E)`. Unidade: %. Denominador: todos os empreendedores do recorte. | Mostra a presença feminina no universo empreendedor. Não mede a proporção de mulheres que empreendem na população total e não estabelece 50% como uma meta oficial. Dialoga com igualdade de oportunidades no ODS 5. |
+| **3. Mulheres negras** | `100 × Σw(M e V2010 ∈ {2,4}) / Σw(M)`. Unidade: %. Pretas e pardas formam o grupo de mulheres negras. | Evidencia o peso desse grupo entre as empreendedoras, conectando ODS 5 e ODS 18. Participação elevada não demonstra igualdade racial; deve ser examinada junto com renda e CNPJ. |
+| **4. Formalização feminina** | `100 × Σw(M e V4019=1) / Σw(M e V4019 ∈ {1,2})`. Unidade: %. Respostas ausentes ficam fora do denominador. | Mede a presença de CNPJ entre empreendedoras com resposta válida. Ajuda a investigar diferenças no registro dos negócios. CNPJ não mede, sozinho, acesso a crédito, proteção previdenciária ou qualidade do trabalho. |
+| **5. Renda média feminina** | `Σ(w × VD4016) / Σw`, entre M com renda informada. Unidade: R$/mês, renda habitual nominal do trabalho principal. Zero informado é válido; ausências são excluídas. | Descreve os recursos econômicos associados ao trabalho das empreendedoras. Os cruzamentos raciais evidenciam desigualdades relevantes aos dois ODS. Não equivale a lucro empresarial nem renda domiciliar. |
+| **6. Diferença de renda por sexo** | `100 × (1 − renda média de M / renda média de H)`. Unidade: %. As duas médias usam rendas informadas sob os mesmos filtros. | Valor positivo indica quanto a média feminina fica abaixo da masculina; negativo indica média feminina superior. É uma diferença descritiva, sem ajuste por jornada, setor ou escolaridade, e não mede isoladamente discriminação. |
+
+Sem denominador ou comparador válido, o cartão mostra **“Sem base”**. Os tamanhos amostrais e os números de respostas válidas aparecem na interface para apoiar a leitura. Os gráficos e a tabela permitem aprofundar os indicadores por sexo e raça/cor.
+
+Filtros: trimestre, território, raça/cor, escolaridade, idade e atividade econômica. A tabela tem ordenação e download CSV agregado.
+
+## Interpretação e ODS
+
+O pacote tem 20.706 observações pessoa-trimestre: 10.062 no T1/2026 e 10.644 no T2/2026. Salvador tem 3.382 observações e já integra a Bahia. O painel seleciona o trimestre mais recente inicialmente e não soma os períodos nas estimativas populacionais. A evolução mostra os trimestres separadamente, mantendo os demais filtros.
+
+Empreendedores: VD4009 = 8 ou 9; mulheres: V2007 = 2; população negra: V2010 = 2 ou 4. Sexo da pesquisa não mede identidade de gênero. Renda ausente não vira zero. Sem denominador válido, aparece “Sem base”. São estimativas pontuais, sem intervalos de confiança do desenho amostral. O aviso para amostras menores que 30 é exploratório e não representa critério oficial do IBGE. Rendas são nominais, sem deflacionamento. A base contém somente ocupados e não permite medir desemprego.
+
+O painel relaciona autonomia econômica ao [ODS 5](https://www.ipea.gov.br/ods/ods5.html) e desigualdades étnico-raciais ao [ODS 18](https://ods.igualdaderacial.gov.br/ods18), adotado voluntariamente pelo Brasil e complementar aos 17 ODS globais. São indicadores analíticos do projeto, não os indicadores oficiais dos ODS.
+
+## Análise crítica dos resultados obtidos
+
+**Base de referência desta análise:** pacote original da fase 2, ano de 2026, sem filtros adicionais de raça/cor, idade, escolaridade ou atividade. O quadro principal usa o **2º trimestre**, período mais recente do pacote. São resultados calculados com as mesmas funções de ponderação do dashboard. Caso `DATA_FILE` aponte para outra versão, os números da tela poderão diferir desta análise documentada.
+
+### Resultado dos seis indicadores no 2º trimestre de 2026
+
+| Indicador | Bahia, incluindo Salvador | Salvador | Bahia fora de Salvador |
+| --- | ---: | ---: | ---: |
+| Empreendedoras estimadas | 699.114 | 148.873 | 550.241 |
+| Participação feminina no empreendedorismo | 33,26% | 40,15% | 31,79% |
+| Mulheres negras entre as empreendedoras | 76,75% | 78,16% | 76,36% |
+| Formalização feminina por CNPJ | 22,49% | 30,10% | 20,43% |
+| Renda média feminina | R$ 2.019,65 | R$ 2.515,50 | R$ 1.885,49 |
+| Diferença de renda em relação aos homens | 22,83% | 38,52% | 19,42% |
+| Empreendedoras na amostra, sem ponderação | 1.219 | 233 | 986 |
+
+As estimativas de população estão arredondadas. Salvador é parte da Bahia e não deve ser somada ao total estadual. No recorte estadual, as 1.219 empreendedoras possuem renda informada e resposta válida sobre CNPJ; nesse trimestre, os denominadores desses dois indicadores não sofrem perda por ausência de resposta.
+
+### ODS 5: presença feminina e autonomia econômica
+
+Na Bahia, as mulheres representam **33,26% dos empreendedores** e recebem renda média de **R$ 2.019,65**, enquanto a média dos homens empreendedores é de **R$ 2.617,00**. A diferença descritiva de **22,83%** mostra que presença no empreendedorismo e igualdade de rendimento são dimensões distintas. Esses resultados justificam investigar as condições de inserção econômica das mulheres; a base não permite determinar se elas empreendem por oportunidade ou necessidade.
+
+Salvador apresenta participação feminina maior (**40,15%**) e renda feminina mais alta (**R$ 2.515,50**) que o restante do estado. Mesmo assim, a diferença em relação aos homens é maior na capital (**38,52%**), pois a renda média masculina é de **R$ 4.091,65**. Assim, uma média feminina absoluta mais elevada pode coexistir com uma distância relativa maior entre os sexos. Avaliar somente o rendimento médio das mulheres ocultaria essa desigualdade.
+
+A formalização feminina também varia territorialmente: **30,10%** em Salvador e **20,43%** na Bahia fora de Salvador. Isso sugere investigar barreiras e condições de registro dos negócios conforme o território. O indicador não permite afirmar que ter CNPJ causa renda maior nem classificar toda pessoa sem CNPJ como desprotegida em todas as dimensões.
+
+### ODS 18: maioria numérica não significa igualdade de condições
+
+Mulheres negras constituem **76,75%** das empreendedoras da Bahia. Para avaliar desigualdade racial, essa participação precisa ser combinada com as condições de renda e formalização:
+
+| Grupo de empreendedores · Bahia, T2/2026 | Renda média nominal | Com CNPJ | Amostra do grupo |
+| --- | ---: | ---: | ---: |
+| Mulheres negras, pretas e pardas | R$ 1.620,24 | 17,88% | 925 |
+| Mulheres brancas | R$ 3.440,60 | 39,11% | 280 |
+| Homens negros, pretos e pardos | R$ 2.267,29 | 16,84% | 1.895 |
+| Homens brancos | R$ 4.105,93 | 27,47% | 493 |
+
+No trimestre analisado, todos os integrantes desses quatro grupos têm renda e resposta sobre CNPJ informadas. As demais categorias raciais permanecem no painel, mas não integram esta comparação específica entre população negra e branca; portanto, essas linhas não esgotam o universo de empreendedores.
+
+A renda média das empreendedoras negras é inferior à das empreendedoras brancas e à dos homens negros. A formalização entre mulheres negras fica **21,23 pontos percentuais** abaixo da observada entre mulheres brancas. Esses cruzamentos mostram por que uma análise apenas por sexo ou apenas pela participação racial seria insuficiente para discutir os ODS 5 e 18 conjuntamente.
+
+A formalização não segue exatamente a mesma ordenação da renda: mulheres negras apresentam CNPJ em **17,88%** dos casos ponderados, frente a **16,84%** dos homens negros, embora tenham renda média menor. Portanto, formalização e rendimento devem ser examinados separadamente. A comparação não demonstra as causas das diferenças e não constitui uma estimativa de efeito causal de sexo ou raça/cor.
+
+### Evolução descritiva e limites das conclusões
+
+Entre T1 e T2/2026, na Bahia, a participação feminina passou de **33,73% para 33,26%**, a formalização feminina de **19,96% para 22,49%** e a diferença de renda por sexo de **28,32% para 22,83%**. A redução observada da diferença de renda não autoriza concluir que houve progresso estatisticamente comprovado nos ODS: há somente dois períodos, sem cálculo de erros padrão, e as rendas são nominais. As pessoas podem reaparecer nas entrevistas; não se trata de contar pessoas distintas ou acompanhar trajetórias individuais.
+
+Os resultados apontam dimensões que merecem investigação — desigualdades de rendimento, registro dos negócios e diferenças territoriais —, mas não demonstram que elas sejam causadas isoladamente por sexo ou raça/cor. Composição setorial, escolaridade, jornada e outros fatores podem participar dessas diferenças. Alguns filtros produzem grupos pequenos, e médias podem ser influenciadas por rendimentos elevados. O painel não estima todas as dimensões dos ODS, não mede desemprego e não permite generalizar os resultados da Bahia para o Brasil. A análise não afirma cumprimento ou descumprimento de metas oficiais.
+
+### Como reproduzir os números da análise
 
 ```powershell
-terraform -chdir=infra/aiven init -backend=false
-terraform -chdir=infra/aiven fmt -check -recursive
-terraform -chdir=infra/aiven validate
+.\.venv\Scripts\python.exe scripts/analisar_resultados.py
 ```
 
-Com token e parâmetros reais, importe o serviço existente e revise o plano:
+O comando lê diretamente o pacote original, independentemente de `DATA_FILE`, e grava [docs/resultados_pnad.json](docs/resultados_pnad.json), incluindo o SHA-256 do CSV, indicadores por trimestre e território, rendas, CNPJ e tamanhos amostrais por grupo. As fórmulas usadas são as de [analytics.py](analytics.py). A tabela acima apresenta os valores arredondados para leitura.
+
+## Verificação
 
 ```powershell
-./infra/aiven/importar_existente.ps1 -Projeto "PROJETO_REAL" -Servico "SERVICO_REAL" -Cloud "CLOUD_REGIAO_REAL" -Plano "PLANO_ATUAL"
+.\.venv\Scripts\python.exe -m unittest discover -s tests -v
 ```
 
-O iniciador solicita o token, importa o recurso e executa `plan`; não executa `apply`. Não crie outro serviço nem altere plano/região para simular uma evidência de provisionamento. As instruções e pendências estão em `infra/aiven/README.md`.
+Os testes sobem a API em porta temporária e fazem chamadas HTTP reais, inclusive pelo cliente usado nos callbacks do dashboard. Verificam atualização do CSV, falha e recuperação, campos ausentes, ponderação, filtros, exportação e contrato. Dados e relatórios originais foram preservados como material de origem.
 
-**4. Executar a carga**, somente se for necessário criar ou recarregar o destino:
-
-```powershell
-# Banco novo: omitir -Substituir.
-./scripts/conectar_e_carregar_aiven.ps1
-
-# Recarga intencional de tabelas ef já existentes:
-./scripts/conectar_e_carregar_aiven.ps1 -Substituir
-```
-
-A substituição é transacional e limitada às tabelas do esquema `ef`. Sem `-Substituir`, o carregador recusa alterar tabelas já populadas. A opção explícita `--config` tem precedência sobre `PGCONNECTION`; sem essa opção, o ambiente pode fornecer a conexão e, se ausente, é usado o perfil local. Para o ambiente local, utilize `./scripts/conectar_e_carregar.ps1`.
-
-**5. Conferir os dados e a segurança**. Com a senha em `PGPASSWORD`, a consulta abaixo gera as evidências de nuvem:
-
-```powershell
-& ./.venv/Scripts/python.exe scripts/verificar_postgres.py --config config/postgres.aiven.json --nuvem
-& ./.venv/Scripts/python.exe scripts/verificar_segredos.py --raiz . --saida evidencias/seguranca_revisao.json
-& ./.venv/Scripts/python.exe -m unittest discover -s tests -v
-```
-
-As consultas de conferência estão em `sql/03_validacao.sql`. Para consultar somente Salvador:
-
-```sql
-SELECT * FROM ef.observacao WHERE uf=29 AND capital=29;
-```
-
-**6. Revisar a documentação e as evidências antes de publicar**. `carga_nuvem.json`, `estrutura_nuvem.json`, `validacao_nuvem.txt` e `comparacao_integral_aiven.json` registram a carga histórica. `terraform_validacao.json`, `seguranca_revisao.json` e `repositorio_preservado.json` registram as verificações desta revisão. A inspeção de segredos é estática e não certifica binários ou histórico remoto.
-
-O pacote inclui a base tratada, backups, código, SQL, infraestrutura e documentação. As decisões estão em `docs/DECISOES_TECNICAS.md` e o mapeamento da atividade em `docs/ITENS_DA_ENTREGA.md`. A publicação desta revisão no repositório continua suspensa, conforme a solicitação do usuário.
+Referências: [Flask](https://flask.palletsprojects.com/en/stable/api/), [Requests](https://requests.readthedocs.io/en/stable/user/quickstart/) e [Dash](https://dash.plotly.com/basic-callbacks).

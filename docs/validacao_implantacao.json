@@ -1,0 +1,15 @@
+{
+  "validado_em_utc": "2026-11-17T23:48:52.280528+00:00",
+  "python": "3.14.3",
+  "resultado": "aprovado_localmente",
+  "observacoes_fonte": 20706,
+  "verificacoes": [
+    "API /health: HTTP 200",
+    "Dashboard /: HTTP 200",
+    "Snapshot da API: quantidade consistente",
+    "Contrato OpenAPI: HTTP 200",
+    "Dashboard → API: seis indicadores recebidos por HTTP",
+    "Processo de teste encerrado; instâncias do usuário preservadas"
+  ],
+  "repositorio_git_detectado": true
+}
