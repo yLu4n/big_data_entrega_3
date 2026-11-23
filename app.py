@@ -11,7 +11,7 @@ from dash import Dash, Input, Output, State, dcc, html, dash_table, no_update
 from analytics import EDUCATION, RACES, SECTORS, filtered, income, intersection, metrics, weight
 from data_source import load_data
 
-app = Dash(__name__, title='Entre Elas • Bahia', update_title='Atualizando…')
+app = Dash(__name__, title='Empreendedorismo Feminino na Bahia', update_title='Atualizando…')
 server = app.server
 COLORS = ['#6238a5', '#dc7749', '#247e86', '#bc587d', '#9c8450', '#607d9f']
 REFRESH = max(15, int(os.getenv('REFRESH_SECONDS', '60')))
@@ -63,8 +63,7 @@ def empty(title, message='Sem observações para este recorte.'):
 
 app.layout = html.Div([
     html.A('Ir para os indicadores', href='#indicadores', className='skip-link'),
-    html.Header([html.Div([html.Span('E', className='brand-icon'), html.Strong('Entre Elas'),
-                           html.Span('OBSERVATÓRIO BAHIA', className='brand-sub')], className='brand'),
+    html.Header([html.Div([html.Strong('Empreendedorismo Feminino na Bahia')], className='brand'),
                  html.Div('PNAD Contínua / IBGE', className='header-source')], className='topbar'),
     html.Main([
         html.Div([html.Div([html.P('TRABALHO, RENDA E DIREITOS', className='eyebrow'),
@@ -116,7 +115,7 @@ app.layout = html.Div([
                 html.Li('São estimativas pontuais exploratórias, sem erros padrão ou intervalos de confiança do desenho amostral. Grupos pequenos exigem cautela; n < 30 é um alerta operacional, não um critério oficial do IBGE.'),
                 html.Li('A base não permite medir desemprego, violência de gênero, trabalho de cuidado ou todos os direitos abrangidos pelos ODS. Estes são indicadores analíticos do projeto, não os indicadores oficiais dos ODS.'),
             ]), html.A('Fonte: PNAD Contínua / IBGE ↗', href='https://www.ibge.gov.br/estatisticas/sociais/trabalho/9173-pnadcontinua.html', target='_blank', rel='noopener noreferrer')], className='methodology'),
-        html.Footer('Entre Elas • Bahia | Dados para tornar as desigualdades visíveis.'),
+        html.Footer('Empreendedorismo Feminino na Bahia | Dados para tornar as desigualdades visíveis.'),
     ]),
     dcc.Interval(id='clock', interval=REFRESH * 1000, n_intervals=0),
 ])

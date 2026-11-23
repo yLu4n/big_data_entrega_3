@@ -1,4 +1,4 @@
-# Entre Elas · Bahia
+# Empreendedorismo Feminino na Bahia
 
 Dashboard Plotly Dash com API REST própria para os dados da PNAD Contínua. Fluxo: **base tratada → API HTTP → dashboard**, mantendo os seis indicadores, filtros, gráficos interseccionais e exportação CSV.
 
@@ -50,7 +50,7 @@ O diagrama representa as seções reais da interface, de cima para baixo. É um 
 
 ```mermaid
 flowchart TB
-    header["Entre Elas · Observatório Bahia | PNAD Contínua / IBGE"]
+    header["Empreendedorismo Feminino na Bahia | PNAD Contínua / IBGE"]
     hero["Empreender na Bahia. Enxergar as desigualdades. | ODS 5 e ODS 18"]
     connection["Status da API · Horário da consulta · Botão Atualizar dados"]
     filters["FILTROS: trimestre · território · raça/cor · escolaridade · atividade · idade"]

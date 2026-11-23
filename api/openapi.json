@@ -1,7 +1,7 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "Entre Elas · API de dados",
+    "title": "Empreendedorismo Feminino na Bahia API de dados",
     "version": "1.0.0",
     "description": "API própria de leitura da base tratada PNAD Contínua. Relê o arquivo em cada requisição. Snapshot completo de ocupados da Bahia, sem paginação. Serviço local, sem autenticação. Novos dados devem ser incorporados ao arquivo de origem."
   },
@@ -32,7 +32,7 @@
                       "const": "ok"
                     },
                     "service": {
-                      "const": "entre-elas-api"
+                      "const": "empreendedorismo-feminino-bahia-api"
                     },
                     "version": {
                       "type": "string"

@@ -1,4 +1,4 @@
-# Implantação e infraestrutura do Entre Elas
+# Implantação e infraestrutura do Empreendedorismo Feminino na Bahia
 
 ## Escopo da entrega
 

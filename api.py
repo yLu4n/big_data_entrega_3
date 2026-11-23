@@ -19,7 +19,7 @@ def create_app():
 
     @api.get('/health')
     def health():
-        return jsonify(status='ok', service='entre-elas-api', version='1.0.0')
+        return jsonify(status='ok', service='empreendedorismo-feminino-bahia-api', version='1.0.0')
 
     @api.get('/openapi.json')
     def contract():
