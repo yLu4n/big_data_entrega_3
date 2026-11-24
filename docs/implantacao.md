@@ -20,7 +20,7 @@ O iniciador mantém a API em uma thread e o dashboard no processo principal. As 
 
 ## Pré-requisitos
 
-- Python disponível no terminal. O ambiente efetivamente validado foi Windows com Python **3.14.3**. Outras versões e sistemas não foram homologados nesta entrega.
+- Python disponível no terminal. A entrega foi validada em Windows com Python **3.14.3** e revalidada com Python **3.13.4** em 24/11/2026, após reconstrução limpa do ambiente. Outras versões e sistemas não foram homologados nesta entrega.
 - Acesso à internet para instalar as dependências na preparação inicial. Com o ambiente preparado e a base disponível, a execução local não depende de serviços externos.
 - O arquivo `Dados_tratados/Entrega_Tecnica_Fase_2_Bahia.zip`, ou um CSV compatível configurado em `DATA_FILE`.
 - Permissão de escrita na pasta do projeto e disponibilidade das duas portas locais.
@@ -33,7 +33,9 @@ Execute a partir da raiz do projeto:
 python scripts/preparar_ambiente.py
 ```
 
-O script cria `.venv` se necessário, instala `requirements.txt` e copia `.env.example` para `.env` somente se este último não existir. Pode ser executado novamente e preserva a configuração existente. A instalação termina com erro se o download ou a instalação de dependências falhar. As faixas de versões estão em `requirements.txt`; elas não constituem um lockfile de versões exatas.
+O script cria `.venv` se necessário, instala `requirements.txt`, valida a importação das dependências e copia `.env.example` para `.env` somente se este último não existir. Pode ser executado novamente e preserva a configuração existente. A instalação termina com erro se o download, a instalação ou o carregamento das dependências falhar. As faixas de versões estão em `requirements.txt`; elas não constituem um lockfile de versões exatas.
+
+Se a versão do Python mudar ou o NumPy/Pandas apresentar incompatibilidade de arquivos compilados, execute `python scripts/preparar_ambiente.py --recriar` usando o Python externo ao ambiente. O script preserva a pasta antiga em `tmp/ambientes/` e cria uma `.venv` limpa. Recriar a `.venv` sobre uma instalação anterior sem limpar os pacotes pode misturar extensões de versões diferentes. Não copie a `.venv` entre instalações ou máquinas.
 
 Como alternativa manual:
 

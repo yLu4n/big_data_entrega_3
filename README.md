@@ -19,6 +19,14 @@ python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
 ```
 
+Se o Python da máquina mudou ou surgir erro de importação do NumPy/Pandas com arquivos de outra versão (por exemplo, `cp314` em Python 3.13), recrie o ambiente com o Python instalado fora da `.venv`:
+
+```powershell
+python scripts/preparar_ambiente.py --recriar
+```
+
+O comando preserva a `.venv` anterior em `tmp/ambientes/`, instala as dependências para o Python atual e valida as importações. O `.env` e os dados permanecem intactos. No VS Code, selecione novamente `.venv\Scripts\python.exe` como interpretador e abra um novo terminal após a reconstrução.
+
 O endereço acima é local e funciona enquanto `run.py` estiver ativo. Esta entrega usa a alternativa de execução local prevista no requisito; não há um link de hospedagem pública.
 
 Se uma versão antiga estiver executando, encerre-a com Ctrl+C no terminal antes de iniciar `run.py`. O iniciador verifica se as portas estão ocupadas para evitar que você continue acessando uma instância antiga.
